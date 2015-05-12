@@ -41,8 +41,12 @@
     return elem;
   }
 
-  var FancyScroller = function(selector) {
-    console.log('Fancy Post');
+  var FancyScroller = function(selector, opts) {
+    opts = opts || {};
+    this.friction = opts.friction || 0.9;
+    this.maxEndSpringLength = opts.maxEndSpringLength || 64;
+    this.overlapFactor = opts.overlapFactor || 0.6;
+
     this.el = $(selector);
     this.strecher = $$('div', ['strecher']);
     this.inner = $$('div', ['inner']);
@@ -179,13 +183,12 @@
       // if (v > 0) dV = -dV;
 
       // that._movement.velocity += dV;
-      that._movement.velocity *= 0.9;
+      that._movement.velocity *= that.friction;
 
       // Avoid changing sign
       // if (pV * that._movement.velocity < 0) {
       //   that._movement.velocity = 0;
       // }
-      console.log(that._movement.velocity);
 
       return that._movement.velocity;
     }, 0);
@@ -214,7 +217,6 @@
 
   FancyScroller.prototype.onMouseUp = function(e) {
     this.handleMoveEnd(e.clientY);
-    console.log(this._movement.velocity);
   };
 
   FancyScroller.prototype.updateHeightMap = function() {
@@ -238,31 +240,36 @@
       style.transform = style['-webkit-transform'] = value;
     }
 
-    if (scrollTop < 0) {
-      scrollTop = 0;
-    }
-    if (scrollTop + window.innerHeight > this.totalHeight) {
-      scrollTop = this.totalHeight - window.innerHeight;
+    if (scrollTop < -this.maxEndSpringLength) {
+      scrollTop = -this.maxEndSpringLength;
+    } else if (scrollTop + window.innerHeight > this.totalHeight + this.maxEndSpringLength) {
+      scrollTop = this.totalHeight - window.innerHeight + this.maxEndSpringLength;
     }
     var i;
     for (i = 0; i < this.sections.length; i++) {
       if (scrollTop < this._accumulated[i]) break;
     }
-    setTransform(this.inner, "translateY(-" + scrollTop + "px)");
+
+    var currentSection = this.sections[i],
+      nextSection = this.sections[i + 1];
+    setTransform(this.inner, "translateY(" + (-scrollTop) + "px)");
     if (scrollTop + window.innerHeight > this._accumulated[i]) {
       var delta = this._accumulated[i] - scrollTop;
       var f = delta / window.innerHeight;
-      setTransform(this.sections[i], "translateY(" + (1- f) * 0.6 * window.innerHeight + "px)");
-      setTransform(this.sections[i + 1], "translateY(0)");
-      this.sections[i + 1].style['box-shadow'] = "0 0px " + f * 50 + "px 1px rgba(0, 0, 0, 0.7)";
+      setTransform(currentSection, "translateY(" + (1- f) * this.overlapFactor * window.innerHeight + "px)");
+      if (nextSection) {
+        setTransform(nextSection, "translateY(0)");
+        nextSection.style['box-shadow'] = "0 0px " + f * 50 + "px 1px rgba(0, 0, 0, 0.7)";
+      }
     } else {
       // this.sections[i].style.opacity = 1;
-      setTransform(this.sections[i], "translateY(0)");
+      if (i != this.sections.length - 1) {
+        setTransform(currentSection, "translateY(0)");
+      }
     }
     this.scrollTop = scrollTop;
 
     if (updateScrollBar) {
-      document.documentElement.scrollTop = document.body.scrollTop = newScrollTop;
       document.documentElement.scrollTop = document.body.scrollTop = scrollTop;
     }
   };
