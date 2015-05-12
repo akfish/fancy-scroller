@@ -156,7 +156,7 @@
   FancyScroller.prototype.handleMoveUpdate = function(pos, updateScrollBar) {
     if (!this._movement.moving) return;
     this.updateMovement(pos, updateScrollBar);
-    this.scrollByDelta(this._movement.dY);
+    this.scrollByDelta(this._movement.dY, updateScrollBar);
   };
 
   FancyScroller.prototype.handleMoveEnd = function(pos) {
@@ -169,7 +169,7 @@
     // var pV = (this._movement.velocity > 0) ? 1 : -1;
     this.startAnimation(function (dt) {
       var delta = that._movement.velocity * dt;
-      that.scrollByDelta(delta);
+      that.scrollByDelta(delta, that._movement.updateScrollBar);
 
       // var v = that._movement.velocity,
       //   k = 0.02,
@@ -263,6 +263,7 @@
 
     if (updateScrollBar) {
       document.documentElement.scrollTop = document.body.scrollTop = newScrollTop;
+      document.documentElement.scrollTop = document.body.scrollTop = scrollTop;
     }
   };
 
