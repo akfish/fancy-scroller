@@ -49,14 +49,25 @@
     this.snapTime = opts.snapTime || 300;
     this.snapSectionTop = opts.snapSectionTop || true;
     this.snapSectionBottom = opts.snapSectionBottom || true;
+    this.showMobileScrollIndicator = opts.showMobileScrollIndicator || true;
 
     this.container = container;
     this.el = $$('div', ['wrapper']);
     this.container.appendChild(this.el);
     this.strecher = $$('div', ['strecher']);
     this.inner = $$('div', ['inner']);
+    this.indicator = $$('div', ['mobile-scroll-indicator']);
+
+    this.indicator.activeAttr = document.createAttribute('active');
+    this.indicator.activeAttr.value = false;
+    this.indicator.setAttributeNode(this.indicator.activeAttr);
+    if (!this.showMobileScrollIndicator) {
+      this.indicator.style.display = 'none';
+    }
+
     this.el.appendChild(this.strecher);
     this.el.appendChild(this.inner);
+    this.el.appendChild(this.indicator);
     this.sections = this.container.querySelectorAll(".section");
     for (var i = 0; i < this.sections.length; i++) {
       this.inner.appendChild(this.sections[i]);
@@ -106,6 +117,7 @@
 
   FancyScroller.prototype.onResize = function() {
     this.updateHeightMap();
+
   };
 
   FancyScroller.prototype.startAnimation = function(onTick, targetState, onComplete) {
@@ -132,15 +144,16 @@
     if (Math.abs(state - target) > this._animation.epsilon) {
       requestAnimationFrame(this.tick.bind(this));
     } else {
-      this._animation.animating = false;
-
       if (this._animation.completeCallback) {
         this._animation.completeCallback();
       }
+      this._animation.animating = false;
+
     }
   };
 
   FancyScroller.prototype.handleMoveStart = function(pos) {
+    this.indicator.activeAttr.value = true;
     this.el.className += " noselect";
     document.removeEventListener('scroll', this.onScroll.bind(this));
     var now = window.performance.now();
@@ -211,6 +224,11 @@
     }, 0, that.onMovementComplete.bind(that));
   };
 
+  FancyScroller.prototype.onSnapComplete = function() {
+    console.log("Snap complete");
+    this.indicator.activeAttr.value = false;
+  };
+
   FancyScroller.prototype.onMovementComplete = function() {
     var snapToPos;
 
@@ -236,7 +254,9 @@
         f = Math.min(1, ti / snapTime);
         that.scrollTo(p0 + f * f * delta, true);
         return f;
-      }, 1);
+      }, 1, this.onSnapComplete.bind(this));
+    } else {
+      this.onSnapComplete();
     }
   };
 
@@ -278,6 +298,7 @@
     }
     this.totalHeight = acc;
     this.strecher.style.height = acc + "px";
+    this.indicator.style.height = window.innerHeight / this.totalHeight * window.innerHeight + 'px';
   };
 
   FancyScroller.prototype.scrollTo = function(scrollTop, updateScrollBar) {
@@ -325,7 +346,10 @@
         setTransform(currentSection, "translateY(0)");
       }
     }
+
+    this.indicator.style.top = scrollTop / this.totalHeight * window.innerHeight + 'px';
     this.scrollTop = scrollTop;
+
 
     if (updateScrollBar) {
       document.documentElement.scrollTop = document.body.scrollTop = scrollTop;
@@ -333,6 +357,7 @@
   };
 
   FancyScroller.prototype.doScroll = function() {
+    if (this._animation.animating) return;
     var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
 
     this.scrollTo(scrollTop);

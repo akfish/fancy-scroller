@@ -19,6 +19,22 @@ body {
 	// overflow: visible;
 }
 
+.mobile-scroll-indicator {
+	display: none;
+	position: fixed;
+	background-color: white;
+	opacity: 0;
+	width: 8px;
+	border-radius: 4px;
+	// height: 32px;
+	right: 2px;
+	z-index: 999;
+	transition: opacity 0.3s ease-in-out;
+	&[active='true'] {
+		opacity: 0.7;
+	}
+}
+
 .inner {
 	position: fixed;
 	width: 100%;
@@ -36,6 +52,9 @@ body {
 @media @mobile, @tablet {
 	.strecher {
 		display: none;
+	}
+	.mobile-scroll-indicator {
+		display: block;
 	}
 }
 
