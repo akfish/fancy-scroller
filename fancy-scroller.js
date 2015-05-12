@@ -252,7 +252,8 @@
       this.startAnimation(function (dt) {
         ti += dt;
         f = Math.min(1, ti / snapTime);
-        that.scrollTo(p0 + f * f * delta, true);
+        var p = p0 + f * f * delta;
+        that.scrollTo(p, that._movement.updateScrollBar);
         return f;
       }, 1, this.onSnapComplete.bind(this));
     } else {
