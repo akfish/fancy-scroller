@@ -1,4 +1,30 @@
 (function (ns, $) {
+  // window.performance polyfill
+  (function(){
+
+    if ("performance" in window === false) {
+        window.performance = {};
+    }
+
+    Date.now = (Date.now || function () {  // thanks IE8
+  	  return new Date().getTime();
+    });
+
+    if ("now" in window.performance === false){
+
+      var nowOffset = Date.now();
+
+      if (performance.timing && performance.timing.navigationStart){
+        nowOffset = performance.timing.navigationStart;
+      }
+
+      window.performance.now = function now(){
+        return Date.now() - nowOffset;
+      };
+    }
+
+  })();
+
   ns.ready = function ready(fn) {
     if (document.readyState != 'loading'){
       fn();
@@ -18,7 +44,6 @@
   var FancyScroller = function(selector) {
     console.log('Fancy Post');
     this.el = $(selector);
-    // TODO: fix this and make it self contained
     this.strecher = $$('div', ['strecher']);
     this.inner = $$('div', ['inner']);
     this.el.appendChild(this.strecher);
@@ -132,10 +157,6 @@
     if (!this._movement.moving) return;
     this.updateMovement(pos, updateScrollBar);
     this.scrollByDelta(this._movement.dY);
-
-    // var scrollTop = this.scrollTop;
-    // var newScrollTop = scrollTop - this._movement.dY;
-    // this.scrollTo(newScrollTop, updateScrollBar, updateScrollBar);
   };
 
   FancyScroller.prototype.handleMoveEnd = function(pos) {
@@ -172,11 +193,11 @@
 
   FancyScroller.prototype.onTouchStart = function(e) {
     e.preventDefault();
-    this.handleMoveStart(e.pageY || e.targetTouches[0].pageY);
+    this.handleMoveStart(e.pageY || e.touches[0].pageY || e.targetTouches[0].pageY);
   };
 
   FancyScroller.prototype.onTouchMove = function(e) {
-    this.handleMoveUpdate(e.pageY || e.targetTouches[0].pageY, false);
+    this.handleMoveUpdate(e.pageY || e.touches[0].pageY || e.targetTouches[0].pageY, false);
   };
 
   FancyScroller.prototype.onTouchEnd = function(e) {
