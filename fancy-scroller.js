@@ -47,68 +47,88 @@
     this.initialClassName = this.el.className;
 
     this.scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+
+    this._movement = {
+      moving: false,
+      lastPosition: 0,
+      lastTime: 0,
+      startPosition: 0,
+      startTime: 0,
+      dY: 0,
+      velocity: 0,
+      dT: 0
+    };
   };
 
   FancyScroller.prototype.onResize = function() {
     this.updateHeightMap();
   };
 
-  FancyScroller.prototype.onTouchStart = function(e) {
-    // TODO: disable scroll event handler
-    e.preventDefault();
+  FancyScroller.prototype.handleMoveStart = function(pos) {
     this.el.className += " noselect";
     document.removeEventListener('scroll', this.onScroll.bind(this));
-    this._touchStart = true;
-    this._lastTouchEvent = e;
+    var now = window.performance.now();
+    this._movement.moving = true;
+    this._movement.lastPosition = this._movement.startPosition = pos;
+    this._movement.lastTime = this._movement.startTime = now;
+  };
+
+  FancyScroller.prototype.updateMovement = function(pos, updateScrollBar) {
+    var delta = this._movement.dY = pos - this._movement.lastPosition,
+      now = window.performance.now(),
+      dT = this._movement.dT = now - this._movement.lastTime,
+      velocity = this._movement.velocity = delta / dT;
+
+    this._movement.lastTime = now;
+    this._movement.lastPosition = pos;
+    this._movement.updateScrollBar = updateScrollBar;
+  };
+
+  FancyScroller.prototype.handleMoveUpdate = function(pos, updateScrollBar) {
+    if (!this._movement.moving) return;
+    this.updateMovement(pos, updateScrollBar);
+
+    var scrollTop = this.scrollTop;
+    var newScrollTop = scrollTop - this._movement.dY;
+    this.scrollTo(newScrollTop);
+    if (updateScrollBar) {
+      document.documentElement.scrollTop = document.body.scrollTop = newScrollTop;
+    }
+
+  };
+
+  FancyScroller.prototype.handleMoveEnd = function(pos) {
+    this.el.className = this.initialClassName;
+    document.addEventListener('scroll', this.onScroll.bind(this));
+    this._movement.moving = false;
+
+    // TODO: inertial animation
+  };
+
+  FancyScroller.prototype.onTouchStart = function(e) {
+    e.preventDefault();
+    this.handleMoveStart(e.pageY || e.targetTouches[0].pageY);
   };
 
   FancyScroller.prototype.onTouchMove = function(e) {
-    // TODO: update scroll position
-    if (!this._touchStart) return;
-    function getY(evt) {
-      return evt.pageY || evt.targetTouches[0].pageY;
-    }
-    var delta = getY(e) - getY(this._lastTouchEvent);
-    var scrollTop = this.scrollTop;
-    var newScrollTop = scrollTop - delta;
-    this.scrollTo(scrollTop - delta);
-    this._lastTouchEvent = e;
+    this.handleMoveUpdate(e.pageY || e.targetTouches[0].pageY, false);
   };
 
   FancyScroller.prototype.onTouchEnd = function(e) {
-    // TODO: enable scroll event handler
-    document.addEventListener('scroll', this.onScroll.bind(this));
-    this._touchStart = false;
-    this.el.className = this.initialClassName;
+    this.handleMoveEnd(e.clientY);
   };
 
   FancyScroller.prototype.onMouseDown = function(e) {
-    // TODO: disable scroll event handler
-    this._mouseDown = true;
-    this.el.className += " noselect";
-    document.removeEventListener('scroll', this.onScroll.bind(this));
-
-    this._lastMouseEvent = e;
+    this.handleMoveStart(e.clientY);
   };
 
   FancyScroller.prototype.onMouseMove = function(e) {
-    // TODO: update scroll position
-    if (!this._mouseDown) return;
-    var delta = e.clientY - this._lastMouseEvent.clientY;
-
-    var scrollTop = this.scrollTop;
-    var newScrollTop = scrollTop - delta;
-    this.scrollTo(scrollTop - delta);
-    document.documentElement.scrollTop = document.body.scrollTop = newScrollTop;
-    this._lastMouseEvent = e;
-
+    this.handleMoveUpdate(e.clientY, true);
   };
 
   FancyScroller.prototype.onMouseUp = function(e) {
-    // TODO: enable scroll event handler
-    this._mouseDown = false;
-    document.addEventListener('scroll', this.onScroll.bind(this));
-    this.el.className = this.initialClassName;
+    this.handleMoveEnd(e.clientY);
+    console.log(this._movement.velocity);
   };
 
   FancyScroller.prototype.updateHeightMap = function() {
