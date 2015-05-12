@@ -234,7 +234,7 @@
       this.startAnimation(function (dt) {
         ti += dt;
         f = Math.min(1, ti / snapTime);
-        that.scrollTo(p0 + f * f * delta);
+        that.scrollTo(p0 + f * f * delta, true);
         return f;
       }, 1);
     }
