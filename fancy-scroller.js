@@ -56,12 +56,48 @@
       startTime: 0,
       dY: 0,
       velocity: 0,
-      dT: 0
+      dT: 0,
+    };
+
+    this._animation = {
+      epsilon: 0.01,
+      animating: false,
+      shouldCancel: false,
+      lastTick: 0,
+      tickCallback: null,
+      targetState: null
     };
   };
 
   FancyScroller.prototype.onResize = function() {
     this.updateHeightMap();
+  };
+
+  FancyScroller.prototype.startAnimation = function(onTick, targetState) {
+    this._animation.lastTick = window.performance.now();
+    this._animation.animating = true;
+    this._animation.shouldCancel = false;
+    this._animation.tickCallback = onTick;
+    this._animation.targetState = targetState;
+    requestAnimationFrame(this.tick.bind(this));
+  };
+
+  FancyScroller.prototype.tick = function(t) {
+    if (this._animation.shouldCancel) return;
+    this._animation.animating = true;
+    var now = window.performance.now(),
+      dt = now - this._animation.lastTick;
+    this._animation.lastTick = now;
+
+    var state = this._animation.tickCallback(dt),
+      target = this._animation.targetState;
+
+    // Check if we have reched target state
+    if (Math.abs(state - target) > this._animation.epsilon) {
+      requestAnimationFrame(this.tick.bind(this));
+    } else {
+      this._animation.animating = false;
+    }
   };
 
   FancyScroller.prototype.handleMoveStart = function(pos) {
@@ -71,6 +107,8 @@
     this._movement.moving = true;
     this._movement.lastPosition = this._movement.startPosition = pos;
     this._movement.lastTime = this._movement.startTime = now;
+
+    this._animation.shouldCancel = true;
   };
 
   FancyScroller.prototype.updateMovement = function(pos, updateScrollBar) {
@@ -84,17 +122,20 @@
     this._movement.updateScrollBar = updateScrollBar;
   };
 
+  FancyScroller.prototype.scrollByDelta = function(delta, updateScrollBar) {
+    var scrollTop = this.scrollTop;
+    var newScrollTop = scrollTop - delta;
+    this.scrollTo(newScrollTop, updateScrollBar);
+  };
+
   FancyScroller.prototype.handleMoveUpdate = function(pos, updateScrollBar) {
     if (!this._movement.moving) return;
     this.updateMovement(pos, updateScrollBar);
+    this.scrollByDelta(this._movement.dY);
 
-    var scrollTop = this.scrollTop;
-    var newScrollTop = scrollTop - this._movement.dY;
-    this.scrollTo(newScrollTop);
-    if (updateScrollBar) {
-      document.documentElement.scrollTop = document.body.scrollTop = newScrollTop;
-    }
-
+    // var scrollTop = this.scrollTop;
+    // var newScrollTop = scrollTop - this._movement.dY;
+    // this.scrollTo(newScrollTop, updateScrollBar, updateScrollBar);
   };
 
   FancyScroller.prototype.handleMoveEnd = function(pos) {
@@ -102,7 +143,31 @@
     document.addEventListener('scroll', this.onScroll.bind(this));
     this._movement.moving = false;
 
-    // TODO: inertial animation
+    // Inertial animation
+    var that = this;
+    // var pV = (this._movement.velocity > 0) ? 1 : -1;
+    this.startAnimation(function (dt) {
+      var delta = that._movement.velocity * dt;
+      that.scrollByDelta(delta);
+
+      // var v = that._movement.velocity,
+      //   k = 0.02,
+      //   dV = k * v * v * dt;
+      //
+      // // dV should always pointing to the opposite direction
+      // if (v > 0) dV = -dV;
+
+      // that._movement.velocity += dV;
+      that._movement.velocity *= 0.9;
+
+      // Avoid changing sign
+      // if (pV * that._movement.velocity < 0) {
+      //   that._movement.velocity = 0;
+      // }
+      console.log(that._movement.velocity);
+
+      return that._movement.velocity;
+    }, 0);
   };
 
   FancyScroller.prototype.onTouchStart = function(e) {
@@ -146,7 +211,7 @@
     this.strecher.style.height = acc + "px";
   };
 
-  FancyScroller.prototype.scrollTo = function(scrollTop) {
+  FancyScroller.prototype.scrollTo = function(scrollTop, updateScrollBar) {
     function setTransform(el, value) {
       var style = el.style;
       style.transform = style['-webkit-transform'] = value;
@@ -174,6 +239,10 @@
       setTransform(this.sections[i], "translateY(0)");
     }
     this.scrollTop = scrollTop;
+
+    if (updateScrollBar) {
+      document.documentElement.scrollTop = document.body.scrollTop = newScrollTop;
+    }
   };
 
   FancyScroller.prototype.doScroll = function() {
