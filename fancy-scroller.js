@@ -46,6 +46,9 @@
     this.friction = opts.friction || 0.9;
     this.maxEndSpringLength = opts.maxEndSpringLength || 64;
     this.overlapFactor = opts.overlapFactor || 0.6;
+    this.snapTime = opts.snapTime || 300;
+    this.snapSectionTop = opts.snapSectionTop || true;
+    this.snapSectionBottom = opts.snapSectionBottom || true;
 
     this.el = $(selector);
     this.strecher = $$('div', ['strecher']);
@@ -94,7 +97,8 @@
       shouldCancel: false,
       lastTick: 0,
       tickCallback: null,
-      targetState: null
+      targetState: null,
+      completeCallback: null
     };
   };
 
@@ -102,12 +106,13 @@
     this.updateHeightMap();
   };
 
-  FancyScroller.prototype.startAnimation = function(onTick, targetState) {
+  FancyScroller.prototype.startAnimation = function(onTick, targetState, onComplete) {
     this._animation.lastTick = window.performance.now();
     this._animation.animating = true;
     this._animation.shouldCancel = false;
     this._animation.tickCallback = onTick;
     this._animation.targetState = targetState;
+    this._animation.completeCallback = onComplete;
     requestAnimationFrame(this.tick.bind(this));
   };
 
@@ -126,6 +131,10 @@
       requestAnimationFrame(this.tick.bind(this));
     } else {
       this._animation.animating = false;
+
+      if (this._animation.completeCallback) {
+        this._animation.completeCallback();
+      }
     }
   };
 
@@ -185,13 +194,48 @@
       // that._movement.velocity += dV;
       that._movement.velocity *= that.friction;
 
+      // Cannot go further
+      if (that.scrollTop <= -that.maxEndSpringLength ||
+        that.scrollTop + window.innerHeight > that.totalHeight + that.maxEndSpringLength * that.overlapFactor) {
+        that._movement.velocity = 0;
+      }
+
       // Avoid changing sign
       // if (pV * that._movement.velocity < 0) {
       //   that._movement.velocity = 0;
       // }
 
       return that._movement.velocity;
-    }, 0);
+    }, 0, that.onMovementComplete.bind(that));
+  };
+
+  FancyScroller.prototype.onMovementComplete = function() {
+    var snapToPos;
+
+    if (this.scrollTop < 0) {
+      snapToPos = 0;
+    } else if (this.scrollTop + window.innerHeight > this.totalHeight) {
+      snapToPos = this.totalHeight - window.innerHeight;
+    } else if (this.snapSectionTop &&
+      this.visibleSectionBorderPos > 0 && this.visibleSectionBorderPos < window.innerHeight * 0.3) {
+      snapToPos = this._accumulated[this.currentSectionIndex];
+    } else if (this.snapSectionBottom &&
+      this.visibleSectionBorderPos > window.innerHeight * 0.7 && this.visibleSectionBorderPos < window.innerHeight) {
+        snapToPos = this.currentSectionIndex > 0 ? this._accumulated[this.currentSectionIndex - 1] : 0;
+    }
+    var snapTime = this.snapTime;
+    if (snapToPos !== null && !isNaN(snapToPos)) {
+      var that = this,
+        ti = 0,
+        p0 = this.scrollTop,
+        delta = snapToPos - p0;
+      this.startAnimation(function (dt) {
+        ti += dt;
+        f = Math.min(1, ti / snapTime);
+        that.scrollTo(p0 + f * f * delta);
+        return f;
+      }, 1);
+    }
   };
 
   FancyScroller.prototype.onTouchStart = function(e) {
@@ -240,15 +284,24 @@
       style.transform = style['-webkit-transform'] = value;
     }
 
+    this.topOvershoot = this.bottomOvershoot = false;
+
     if (scrollTop < -this.maxEndSpringLength) {
       scrollTop = -this.maxEndSpringLength;
+      this.topOvershoot = true;
     } else if (scrollTop + window.innerHeight > this.totalHeight + this.maxEndSpringLength) {
       scrollTop = this.totalHeight - window.innerHeight + this.maxEndSpringLength;
+      this.bottomOvershoot = true;
     }
     var i;
     for (i = 0; i < this.sections.length; i++) {
       if (scrollTop < this._accumulated[i]) break;
     }
+
+    this.visibleSectionBorderPos = scrollTop < 0 ? -scrollTop : this._accumulated[i] - scrollTop;
+
+    // Current secion is always the upper one
+    this.currentSectionIndex = i;
 
     var currentSection = this.sections[i],
       nextSection = this.sections[i + 1];
@@ -261,6 +314,9 @@
         setTransform(nextSection, "translateY(0)");
         nextSection.style['box-shadow'] = "0 0px " + f * 50 + "px 1px rgba(0, 0, 0, 0.7)";
       }
+    } else if (scrollTop < 0) {
+      var _f = -scrollTop / window.innerHeight;
+      currentSection.style['box-shadow'] = "0 0px " + _f * 50 + "px 1px rgba(0, 0, 0, 0.7)";
     } else {
       // this.sections[i].style.opacity = 1;
       if (i != this.sections.length - 1) {
