@@ -41,7 +41,7 @@
     return elem;
   }
 
-  var FancyScroller = function(selector, opts) {
+  var FancyScroller = function(container, opts) {
     opts = opts || {};
     this.friction = opts.friction || 0.9;
     this.maxEndSpringLength = opts.maxEndSpringLength || 64;
@@ -50,12 +50,14 @@
     this.snapSectionTop = opts.snapSectionTop || true;
     this.snapSectionBottom = opts.snapSectionBottom || true;
 
-    this.el = $(selector);
+    this.container = container;
+    this.el = $$('div', ['wrapper']);
+    this.container.appendChild(this.el);
     this.strecher = $$('div', ['strecher']);
     this.inner = $$('div', ['inner']);
     this.el.appendChild(this.strecher);
     this.el.appendChild(this.inner);
-    this.sections = this.el.querySelectorAll(".section");
+    this.sections = this.container.querySelectorAll(".section");
     for (var i = 0; i < this.sections.length; i++) {
       this.inner.appendChild(this.sections[i]);
     }
