@@ -352,6 +352,7 @@
       var section = this.sections[i];
       var height = section.clientHeight || section.offsetHeight;
       var hash = section.getAttribute('name') || this.opts.hashPrefix + i;
+      section.style.top = acc + 'px';
       this._hashToIndex[hash] = i;
       this._hashes.push(hash);
       this._heights.push(height);
