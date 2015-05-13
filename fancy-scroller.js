@@ -57,22 +57,36 @@
     return elem;
   }
 
-  var FancyScroller = function(container, opts) {
-    opts = opts || {};
-    this.friction = opts.friction || 0.9;
-    this.maxEndSpringLength = opts.maxEndSpringLength || 64;
-    this.overlapFactor = opts.overlapFactor || 0.6;
-    this.snapTime = opts.snapTime || 300;
-    this.snapSectionTop = opts.snapSectionTop || true;
-    this.snapSectionBottom = opts.snapSectionBottom || true;
-    this.showMobileScrollIndicator = opts.showMobileScrollIndicator || true;
-    this.hashPrefix = opts.hashPrefix || 'section-';
-    this.autoSetHash = opts.autoSetHash || false;
-    this.debug = opts.debug || false;
-    this.loadDefaultStyle = opts.loadDefaultStyle || true;
+  function defaults() {
+    var o = {};
+    for (var i = 0; i < arguments.length; i++) {
+      for (var key in arguments[i]) {
+        o[key] = arguments[i][key];
+      }
+    }
+    return o;
+  }
 
-    if (this.loadDefaultStyle) {
-      ns.loadStyle(this.debug ? style_debug_url : style_url);
+  var DEFAULT_OPTS = {
+    friction: 0.9,
+    maxEndSpringLength: 64,
+    overlapFactor: 0.6,
+    snapTime: 300,
+    snapSectionTop: true,
+    snapSectionBottom: true,
+    showMobileScrollIndicator: true,
+    hashPrefix: 'section-',
+    autoSetHash: false,
+    debug: false,
+    loadDefaultStyle: true,
+    animationEpsilon: 0.01
+  };
+
+  var FancyScroller = function(container, opts) {
+    this.opts = defaults(DEFAULT_OPTS, opts);
+
+    if (this.opts.loadDefaultStyle) {
+      ns.loadStyle(this.opts.debug ? style_debug_url : style_url);
     }
 
     this.container = container;
@@ -85,7 +99,7 @@
     this.indicator.activeAttr = document.createAttribute('active');
     this.indicator.activeAttr.value = false;
     this.indicator.setAttributeNode(this.indicator.activeAttr);
-    if (!this.showMobileScrollIndicator) {
+    if (!this.opts.showMobileScrollIndicator) {
       this.indicator.style.display = 'none';
     }
 
@@ -116,7 +130,7 @@
     };
 
     this._animation = {
-      epsilon: 0.01,
+      epsilon: this.opts.animationEpsilon,
       animating: false,
       shouldCancel: false,
       lastTick: 0,
@@ -246,11 +260,11 @@
       // if (v > 0) dV = -dV;
 
       // that._movement.velocity += dV;
-      that._movement.velocity *= that.friction;
+      that._movement.velocity *= that.opts.friction;
 
       // Cannot go further
-      if (that.scrollTop <= -that.maxEndSpringLength ||
-        that.scrollTop + window.innerHeight > that.totalHeight + that.maxEndSpringLength * that.overlapFactor) {
+      if (that.scrollTop <= -that.opts.maxEndSpringLength ||
+        that.scrollTop + window.innerHeight > that.totalHeight + that.opts.maxEndSpringLength * that.opts.overlapFactor) {
         that._movement.velocity = 0;
       }
 
@@ -274,34 +288,18 @@
       snapToPos = 0;
     } else if (this.scrollTop + window.innerHeight > this.totalHeight) {
       snapToPos = this.totalHeight - window.innerHeight;
-    } else if (this.snapSectionTop &&
+    } else if (this.opts.snapSectionTop &&
       this.visibleSectionBorderPos > 0 && this.visibleSectionBorderPos < window.innerHeight * 0.3) {
       snapToPos = this._accumulated[this.currentSectionIndex];
-    } else if (this.snapSectionBottom &&
+    } else if (this.opts.snapSectionBottom &&
       this.visibleSectionBorderPos > window.innerHeight * 0.7 && this.visibleSectionBorderPos < window.innerHeight) {
         snapToPos = this.currentSectionIndex > 0 ? this._accumulated[this.currentSectionIndex - 1] : 0;
     }
     this.snapTo(snapToPos, this._movement.updateScrollBar);
-    // var snapTime = this.snapTime;
-    // if (snapToPos !== null && !isNaN(snapToPos)) {
-    //   var that = this,
-    //     ti = 0,
-    //     p0 = this.scrollTop,
-    //     delta = snapToPos - p0;
-    //   this.startAnimation(function (dt) {
-    //     ti += dt;
-    //     f = Math.min(1, ti / snapTime);
-    //     var p = p0 + f * f * delta;
-    //     that.scrollTo(p, that._movement.updateScrollBar);
-    //     return f;
-    //   }, 1, this.onSnapComplete.bind(this));
-    // } else {
-    //   this.onSnapComplete();
-    // }
   };
 
   FancyScroller.prototype.snapTo = function(snapToPos, updateScrollBar) {
-    var snapTime = this.snapTime;
+    var snapTime = this.opts.snapTime;
     if (snapToPos !== null && !isNaN(snapToPos)) {
       var that = this,
         ti = 0,
@@ -353,7 +351,7 @@
     for (var i = 0; i < this.sections.length; i++) {
       var section = this.sections[i];
       var height = section.clientHeight || section.offsetHeight;
-      var hash = section.getAttribute('name') || this.hashPrefix + i;
+      var hash = section.getAttribute('name') || this.opts.hashPrefix + i;
       this._hashToIndex[hash] = i;
       this._hashes.push(hash);
       this._heights.push(height);
@@ -373,11 +371,11 @@
 
     this.topOvershoot = this.bottomOvershoot = false;
 
-    if (scrollTop < -this.maxEndSpringLength) {
-      scrollTop = -this.maxEndSpringLength;
+    if (scrollTop < -this.opts.maxEndSpringLength) {
+      scrollTop = -this.opts.maxEndSpringLength;
       this.topOvershoot = true;
-    } else if (scrollTop + window.innerHeight > this.totalHeight + this.maxEndSpringLength) {
-      scrollTop = this.totalHeight - window.innerHeight + this.maxEndSpringLength;
+    } else if (scrollTop + window.innerHeight > this.totalHeight + this.opts.maxEndSpringLength) {
+      scrollTop = this.totalHeight - window.innerHeight + this.opts.maxEndSpringLength;
       this.bottomOvershoot = true;
     }
     var i;
@@ -387,7 +385,7 @@
 
     this.visibleSectionBorderPos = scrollTop < 0 ? -scrollTop : this._accumulated[i] - scrollTop;
 
-    if (this.autoSetHash && this.currentSectionIndex != i && !this._animation.animating) {
+    if (this.opts.autoSetHash && this.currentSectionIndex != i && !this._animation.animating) {
       // Changed
       var hash = '#' + this._hashes[i];
       if (location.hash !== hash) {
@@ -404,7 +402,7 @@
     if (scrollTop + window.innerHeight > this._accumulated[i]) {
       var delta = this._accumulated[i] - scrollTop;
       var f = delta / window.innerHeight;
-      setTransform(currentSection, "translateY(" + (1- f) * this.overlapFactor * window.innerHeight + "px)");
+      setTransform(currentSection, "translateY(" + (1- f) * this.opts.overlapFactor * window.innerHeight + "px)");
       if (nextSection) {
         setTransform(nextSection, "translateY(0)");
         nextSection.style['box-shadow'] = "0 0px " + f * 50 + "px 1px rgba(0, 0, 0, 0.7)";
