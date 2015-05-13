@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
   <meta name="viewport" content="width=device-width,user-scalable=no">
-  <link rel="stylesheet/less" href="style.less">
+  <!-- <link rel="stylesheet/less" href="style.less"> -->
   <script type="text/javascript" src="less.min.js"></script>
 </head>
 <body>
@@ -17,7 +17,7 @@
   <script type="text/javascript">
     // loadStyle('style.css');
     ready(function() {
-      window.scroller = new FancyScroller(document.body);
+      window.scroller = new FancyScroller(document.body, {debug: true});
     });
   </script>
 </body>

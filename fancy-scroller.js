@@ -25,6 +25,22 @@
 
   })();
 
+  ns.LOADED_STYLES = ns.LOADED_STYLES || {};
+  ns.loadStyle = function(url) {
+    if (ns.LOADED_STYLES[url]) {
+      return;
+    }
+    var link = document.createElement("link");
+    link.setAttribute("rel", "stylesheet");
+    link.setAttribute("type", "text/css");
+    link.setAttribute("href", url);
+    document.getElementsByTagName("head")[0].appendChild(link);
+    ns.LOADED_STYLES[url] = true;
+  };
+
+  var style_url = 'style.min.css',
+    style_debug_url = 'style.css';
+
   ns.ready = function ready(fn) {
     if (document.readyState != 'loading'){
       fn();
@@ -52,6 +68,12 @@
     this.showMobileScrollIndicator = opts.showMobileScrollIndicator || true;
     this.hashPrefix = opts.hashPrefix || 'section-';
     this.autoSetHash = opts.autoSetHash || false;
+    this.debug = opts.debug || false;
+    this.loadDefaultStyle = opts.loadDefaultStyle || true;
+
+    if (this.loadDefaultStyle) {
+      ns.loadStyle(this.debug ? style_debug_url : style_url);
+    }
 
     this.container = container;
     this.el = $$('div', ['wrapper']);
