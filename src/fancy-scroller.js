@@ -294,7 +294,7 @@
       snapToPos = this._accumulated[this.currentSectionIndex];
     } else if (this.opts.snapSectionBottom &&
       this.visibleSectionBorderPos > window.innerHeight * 0.7 && this.visibleSectionBorderPos < window.innerHeight) {
-        snapToPos = this.currentSectionIndex > 0 ? this._accumulated[this.currentSectionIndex - 1] : 0;
+        snapToPos = this._accumulated[this.currentSectionIndex] - window.innerHeight;
     }
     this.snapTo(snapToPos, this._movement.updateScrollBar);
   };
