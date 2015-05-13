@@ -25,6 +25,9 @@ $ git clone https://github.com/akfish/fancy-scroller.git
 ```html
 <!DOCTYPE html>
 <head>
+  <!-- Recommanded: disable native scroll on mobile devices -->
+  <meta name="viewport" content="width=device-width,user-scalable=no">
+  <link rel="stylesheet" href="path/to/dist/style.min.css">
 </head>
 <body>
   <div id="#container">
@@ -72,7 +75,6 @@ snapSectionBottom | bool | If `true`, snap to current section's bottom when visi
 showMobileScrollIndicator | bool | Wheter to show scroll indicator or not when running on mobile devices | `true`
 hashPrefix | string | Prefix for section hashtags | `section-`
 autoSetHash | bool | If `true`, url's hashtag will be changed to current section's when scrolled | `false`
-loadDefaultStyle | bool | Wheter to load built-in stylesheet automatically or not | `true`
 debug | bool | Enable/disable debug mode (loads un-minified stylesheet) | `false`
 animationEpsilon | float | A small number specifing the maximum margin of error when animating to a target state. Smaller number means more accurate animation (but longer convergence time) | `0.01`
 
@@ -106,8 +108,7 @@ The `.strecher`'s height is then set to be children's total height, which will s
 When scrolled, `transform: translateY(offset)` will be caculated and updated for `.wrapper` (for over-all scrolling) and `.section`s (for relative motion).
 Animations are done with `requesetAnimationFrame`.
 
-By default, Fancy scroller loads [style.less](/less/style.less), which contains bare-minimum style configurations for it to work. You can either do nothing and let it be loaded dynamically, or set `opts.loadDefaultScript` to `false`, and use `<link />` tag to include the stylesheet.
-
+By default, Fancy scroller uses [style.less](/less/style.less), which contains bare-minimum style configurations for it to work. You should include it in `<head>` tag.  
 Normally you should not modify its content, nor overriding any position-related styles mentioned in that file.
 
 ## About

@@ -2,13 +2,18 @@
 <head>
   <meta name="viewport" content="width=device-width,user-scalable=no">
   <title>Fancy Scroller</title>
+  <!-- <link rel="stylesheet/less" href="../demo/demo.less" /> -->
+  <!-- <script src="less.min.js"></script> -->
+  <link rel="stylesheet" href="style<%= debug ? '' : '.min' %>.css">
+  <link rel="stylesheet" href="demo<%= debug ? '' : '.min' %>.css">
 </head>
 <body>
   <%- content %>
   <script src="fancy-scroller<%= debug ? '' : '.min' %>.js"></script>
   <script type="text/javascript">
     // loadStyle('style.css');
-    window.scroller = new FancyScroller(document.body, {debug: <%= debug %>});
-    loadStyle('demo.css');
+    window.scroller = new FancyScroller(document.body, {
+      debug: <%= debug %>,
+    });
   </script>
 </body>

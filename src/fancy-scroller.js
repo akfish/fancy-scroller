@@ -78,16 +78,16 @@
     hashPrefix: 'section-',
     autoSetHash: false,
     debug: false,
-    loadDefaultStyle: true,
+    // loadDefaultStyle: true,
     animationEpsilon: 0.01
   };
 
   var FancyScroller = function(container, opts) {
     this.opts = defaults(DEFAULT_OPTS, opts);
 
-    if (this.opts.loadDefaultStyle) {
-      ns.loadStyle(this.opts.debug ? style_debug_url : style_url);
-    }
+    // if (this.opts.loadDefaultStyle) {
+    //   ns.loadStyle(this.opts.debug ? style_debug_url : style_url);
+    // }
 
     this.container = container;
     this.el = $$('div', ['wrapper']);
@@ -139,10 +139,11 @@
       completeCallback: null
     };
     // this.updateHeightMap();
-    ns.ready(this.init.bind(this));
+    // ns.ready(this.init.bind(this));
     // Somehow elements' height is not gauranteed to be correct on dom ready
     // Nasty little hack to make sure it works
-    setTimeout(this.init.bind(this), 200);
+    // setTimeout(this.init.bind(this), 200);
+    this.init();
     document.addEventListener('scroll', this.onScroll.bind(this));
     window.addEventListener('resize', this.onResize.bind(this));
     window.addEventListener('hashchange', this.onHashChange.bind(this));
