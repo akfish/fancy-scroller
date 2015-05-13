@@ -50,6 +50,8 @@
     this.snapSectionTop = opts.snapSectionTop || true;
     this.snapSectionBottom = opts.snapSectionBottom || true;
     this.showMobileScrollIndicator = opts.showMobileScrollIndicator || true;
+    this.hashPrefix = opts.hashPrefix || 'section-';
+    this.autoSetHash = opts.autoSetHash || false;
 
     this.container = container;
     this.el = $$('div', ['wrapper']);
@@ -73,19 +75,6 @@
       this.inner.appendChild(this.sections[i]);
     }
 
-    // this.updateHeightMap();
-    ns.ready(this.updateHeightMap.bind(this));
-    // Somehow elements' height is not gauranteed to be correct on dom ready
-    // Nasty little hack to make sure it works
-    setTimeout(this.updateHeightMap.bind(this), 200);
-    document.addEventListener('scroll', this.onScroll.bind(this));
-    window.addEventListener('resize', this.onResize.bind(this));
-    this.el.addEventListener('touchstart', this.onTouchStart.bind(this));
-    this.el.addEventListener('touchmove', this.onTouchMove.bind(this));
-    this.el.addEventListener('touchend', this.onTouchEnd.bind(this));
-    this.el.addEventListener('mousedown', this.onMouseDown.bind(this));
-    this.el.addEventListener('mousemove', this.onMouseMove.bind(this));
-    this.el.addEventListener('mouseup', this.onMouseUp.bind(this));
 
     this._mouseDown = false;
 
@@ -113,11 +102,39 @@
       targetState: null,
       completeCallback: null
     };
+    // this.updateHeightMap();
+    ns.ready(this.init.bind(this));
+    // Somehow elements' height is not gauranteed to be correct on dom ready
+    // Nasty little hack to make sure it works
+    setTimeout(this.init.bind(this), 200);
+    document.addEventListener('scroll', this.onScroll.bind(this));
+    window.addEventListener('resize', this.onResize.bind(this));
+    window.addEventListener('hashchange', this.onHashChange.bind(this));
+
+    this.el.addEventListener('touchstart', this.onTouchStart.bind(this));
+    this.el.addEventListener('touchmove', this.onTouchMove.bind(this));
+    this.el.addEventListener('touchend', this.onTouchEnd.bind(this));
+    this.el.addEventListener('mousedown', this.onMouseDown.bind(this));
+    this.el.addEventListener('mousemove', this.onMouseMove.bind(this));
+    this.el.addEventListener('mouseup', this.onMouseUp.bind(this));
+  };
+
+  FancyScroller.prototype.init = function() {
+    this.updateHeightMap();
+    this.mobileMediaQuery = window.matchMedia("only screen and (max-width: 529px), only screen and (min-width: 530px) and (max-width: 949px)");
+    this.onHashChange();
   };
 
   FancyScroller.prototype.onResize = function() {
     this.updateHeightMap();
+  };
 
+  FancyScroller.prototype.onHashChange = function(e) {
+    var hashSectionIndex = this._hashToIndex[location.hash.substr(1)];
+
+    this._animation.shouldCancel = true;
+    var pos = hashSectionIndex > 0 ? this._accumulated[hashSectionIndex - 1] : 0;
+    this.snapTo(pos, !this.mobileMediaQuery.matches);
   };
 
   FancyScroller.prototype.startAnimation = function(onTick, targetState, onComplete) {
@@ -225,7 +242,6 @@
   };
 
   FancyScroller.prototype.onSnapComplete = function() {
-    console.log("Snap complete");
     this.indicator.activeAttr.value = false;
   };
 
@@ -243,6 +259,26 @@
       this.visibleSectionBorderPos > window.innerHeight * 0.7 && this.visibleSectionBorderPos < window.innerHeight) {
         snapToPos = this.currentSectionIndex > 0 ? this._accumulated[this.currentSectionIndex - 1] : 0;
     }
+    this.snapTo(snapToPos, this._movement.updateScrollBar);
+    // var snapTime = this.snapTime;
+    // if (snapToPos !== null && !isNaN(snapToPos)) {
+    //   var that = this,
+    //     ti = 0,
+    //     p0 = this.scrollTop,
+    //     delta = snapToPos - p0;
+    //   this.startAnimation(function (dt) {
+    //     ti += dt;
+    //     f = Math.min(1, ti / snapTime);
+    //     var p = p0 + f * f * delta;
+    //     that.scrollTo(p, that._movement.updateScrollBar);
+    //     return f;
+    //   }, 1, this.onSnapComplete.bind(this));
+    // } else {
+    //   this.onSnapComplete();
+    // }
+  };
+
+  FancyScroller.prototype.snapTo = function(snapToPos, updateScrollBar) {
     var snapTime = this.snapTime;
     if (snapToPos !== null && !isNaN(snapToPos)) {
       var that = this,
@@ -253,7 +289,7 @@
         ti += dt;
         f = Math.min(1, ti / snapTime);
         var p = p0 + f * f * delta;
-        that.scrollTo(p, that._movement.updateScrollBar);
+        that.scrollTo(p, updateScrollBar);
         return f;
       }, 1, this.onSnapComplete.bind(this));
     } else {
@@ -289,10 +325,15 @@
   FancyScroller.prototype.updateHeightMap = function() {
     this._heights = [];
     this._accumulated = [];
+    this._hashToIndex = {};
+    this._hashes = [];
     var acc = 0;
     for (var i = 0; i < this.sections.length; i++) {
       var section = this.sections[i];
       var height = section.clientHeight || section.offsetHeight;
+      var hash = section.getAttribute('name') || this.hashPrefix + i;
+      this._hashToIndex[hash] = i;
+      this._hashes.push(hash);
       this._heights.push(height);
       acc += height;
       this._accumulated.push(acc);
@@ -323,6 +364,14 @@
     }
 
     this.visibleSectionBorderPos = scrollTop < 0 ? -scrollTop : this._accumulated[i] - scrollTop;
+
+    if (this.autoSetHash && this.currentSectionIndex != i && !this._animation.animating) {
+      // Changed
+      var hash = '#' + this._hashes[i];
+      if (location.hash !== hash) {
+        history.pushState(null, null, hash);
+      }
+    }
 
     // Current secion is always the upper one
     this.currentSectionIndex = i;
