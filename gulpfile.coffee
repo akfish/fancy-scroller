@@ -7,15 +7,21 @@ minify      = require 'gulp-minify-css'
 rename      = require 'gulp-rename'
 uglify      = require 'gulp-uglify'
 minimist    = require 'minimist'
+ReadMe      = require './util/readme-renderer'
 
 publish_dir = '.site'
 dist_dir    = 'dist'
 
 asset_files     = './asset/**/*.*'
+main_files      = './src/**/*.*'
+less_files      = './less/**/*.*'
+demo_files      = './demo/**/*.*'
+dist_files      = './dist/**/*.*'
 main_less_file  = './less/style.less'
 main_js_file    = './src/fancy-scroller.js'
 demo_less_file  = './demo/**/*.less'
 demo_ejs_file   = './demo/**/*.ejs'
+
 
 cli_parser_opts =
   default:
@@ -61,12 +67,19 @@ gulp.task 'build', ->
 gulp.task 'demo', ['build'], ->
   copy_assets asset_files, publish_dir
   copy_assets dist_dir + '/**/*.*', publish_dir
-  compile_less  demo_less_file, dist_dir
+  compile_less  demo_less_file, publish_dir
 
   context =
-    content: 'wtf dude'
+    content: new ReadMe('./README.md').render()
     debug: opts.debug
 
   compile_ejs   demo_ejs_file, publish_dir, context
+
+gulp.task 'watch', ->
+  gulp.watch main_files, ['build']
+  gulp.watch less_files, ['build']
+  gulp.watch asset_files, ['demo']
+  gulp.watch demo_files, ['demo']
+  gulp.watch dist_files, ['demo']
 
 gulp.task 'default', ['build', 'demo']
