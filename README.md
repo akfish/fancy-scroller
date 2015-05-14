@@ -73,14 +73,66 @@ snapTime | float (in ms) | The duration of snap animation | `300`
 snapSectionTop | bool | If `true`, snap to current section's top when visible section border sits within the top 1/3 screen space. Only works when scrolled by touch or mouse. | `true`
 snapSectionBottom | bool | If `true`, snap to current section's bottom when visible section border sits within the bottom 1/3 screen space. Only works when scrolled by touch or mouse. | `true`
 showMobileScrollIndicator | bool | Wheter to show scroll indicator or not when running on mobile devices | `true`
-hashPrefix | string | Prefix for section hashtags | `section-`
+hashPrefix | string | Prefix for section hashtags | `"section-"`
 autoSetHash | bool | If `true`, url's hashtag will be changed to current section's when scrolled | `false`
 debug | bool | Enable/disable debug mode (loads un-minified stylesheet) | `false`
 animationEpsilon | float | A small number specifing the maximum margin of error when animating to a target state. Smaller number means more accurate animation (but longer convergence time) | `0.01`
 
 ## Events
 
-(TBD)
+### Event API
+
+Function | Description
+---- | ------------------
+`on(name, handler)` | Attach event handler to an event
+`off(name[, handler])` | Detach one or all handlers for an event
+
+### Available Events
+
+#### Lifecycle Events
+
+Name | Description
+----- | -----------
+`init` | Triggered once constructor has finished execution
+
+#### Movement Events
+
+Name | Description
+---- | ------------------
+`force_start` | Fired when a touch or mouse drag begins
+`move_start` | Fired immediately after `force_start`
+`force_update` | Fired when touch or mouse drag position changes
+`force_end` | Fired when the touch or mouse drag finishes
+`inertia_start` | Fired immediately after `force_end`
+`inertia_end` | Fired when inertia scrolling stops
+`snap_start` | Fired immediately after `inertia_end`
+`snap_end` | Fired when snap stops
+`move_end` | Fired when all movement stops
+
+Note that only mouse or touch events have force, hence only they can trigger movement events.
+
+Current movement states will be passed to all movement event handlers.
+
+#### Scroll Events
+
+Name | Description
+---- | ------------------
+`scrolled` | Fired when scroll postions changes
+
+#### Navigation Events
+
+Name | Description
+---- | ------------------
+`section_changed` | Triggered when upper section has changed
+`hash_update` | Triggered when url hash has been changed due to scroll
+
+#### Animation Events
+
+Name | Description
+---- | ------------------
+`animation_start` | Animation started
+`animation_cancelled` | Animation ended
+`animation_end` | Animation cancelled
 
 ## An Inside Look
 
