@@ -82,12 +82,32 @@
     animationEpsilon: 0.01
   };
 
+  var CONSOLE = {
+    log: function () {
+      console.log.apply(console, arguments);
+    },
+    warn: function () {
+      console.warn.apply(console, arguments);
+    },
+    error: function () {
+      console.error.apply(console, arguments);
+    }
+  },
+
+  KONSOLE = {
+    log: function () {},
+    warn: function () {},
+    error: function () {}
+  };
+
   var FancyScroller = function(container, opts) {
     this.opts = defaults(DEFAULT_OPTS, opts);
 
     // if (this.opts.loadDefaultStyle) {
     //   ns.loadStyle(this.opts.debug ? style_debug_url : style_url);
     // }
+
+    this.console = this.opts.debug ? CONSOLE : KONSOLE;
 
     this.container = container;
     this.el = $$('div', ['wrapper']);
@@ -143,7 +163,7 @@
     // Somehow elements' height is not gauranteed to be correct on dom ready
     // Nasty little hack to make sure it works
     // setTimeout(this.init.bind(this), 200);
-    this.init();
+    this._handlers = {};
     document.addEventListener('scroll', this.onScroll.bind(this));
     window.addEventListener('resize', this.onResize.bind(this));
     window.addEventListener('hashchange', this.onHashChange.bind(this));
@@ -154,16 +174,52 @@
     this.el.addEventListener('mousedown', this.onMouseDown.bind(this));
     this.el.addEventListener('mousemove', this.onMouseMove.bind(this));
     this.el.addEventListener('mouseup', this.onMouseUp.bind(this));
+
+    this.init();
+  };
+
+  FancyScroller.prototype.on = function(evt, handler) {
+    this.console.log('On ' + evt + ', do ' + handler);
+    if (!this._handlers[evt]) this._handlers[evt] = [];
+    this._handlers[evt].push(handler);
+  };
+
+  FancyScroller.prototype.off = function(evt, handler) {
+    this.console.log('Off ' + evt + ', do ' + handler);
+    if (!this._handlers[evt]) return;
+    var handlers = this._handlers[evt];
+    this._handlers[evt] = [];
+    if (!handler) return;
+
+    for (var i = 0; i < handlers.length; i++) {
+      if (handlers[i] != handler) {
+        this._handlers[evt].push(handlers[i]);
+      }
+    }
+  };
+
+  FancyScroller.prototype.trigger = function(evt) {
+    this.console.log('Trigger ' + evt);
+    if (!this._handlers[evt]) return;
+    var handlers = this._handlers[evt];
+    var args = Array.prototype.slice.call(arguments, 1);
+
+    for (var i = 0; i < handlers.length; i++) {
+      var handler = handlers[i];
+      handler.apply(this, args);
+    }
   };
 
   FancyScroller.prototype.init = function() {
     this.updateHeightMap();
     this.mobileMediaQuery = window.matchMedia("only screen and (max-width: 529px), only screen and (min-width: 530px) and (max-width: 949px)");
     this.onHashChange();
+    this.trigger('initialized');
   };
 
   FancyScroller.prototype.onResize = function() {
     this.updateHeightMap();
+    this.trigger('resized');
   };
 
   FancyScroller.prototype.onHashChange = function(e) {
@@ -182,10 +238,11 @@
     this._animation.targetState = targetState;
     this._animation.completeCallback = onComplete;
     requestAnimationFrame(this.tick.bind(this));
+    this.trigger('animation_start');
   };
 
   FancyScroller.prototype.tick = function(t) {
-    if (this._animation.shouldCancel) return;
+    if (this._animation.shouldCancel) return this.trigger('animation_cancelled');
     this._animation.animating = true;
     var now = window.performance.now(),
       dt = now - this._animation.lastTick;
@@ -202,7 +259,7 @@
         this._animation.completeCallback();
       }
       this._animation.animating = false;
-
+      this.trigger('animation_end');
     }
   };
 
@@ -216,6 +273,8 @@
     this._movement.lastTime = this._movement.startTime = now;
 
     this._animation.shouldCancel = true;
+    this.trigger('force_start', this._movement);
+    this.trigger('move_start', this._movement);
   };
 
   FancyScroller.prototype.updateMovement = function(pos, updateScrollBar) {
@@ -239,6 +298,7 @@
     if (!this._movement.moving) return;
     this.updateMovement(pos, updateScrollBar);
     this.scrollByDelta(this._movement.dY, updateScrollBar);
+    this.trigger('force_update', this._movement);
   };
 
   FancyScroller.prototype.handleMoveEnd = function(pos) {
@@ -246,9 +306,12 @@
     document.addEventListener('scroll', this.onScroll.bind(this));
     this._movement.moving = false;
 
+
+    this.trigger('force_end', this._movement);
     // Inertial animation
     var that = this;
     // var pV = (this._movement.velocity > 0) ? 1 : -1;
+    this.trigger('inertia_start', this._movement);
     this.startAnimation(function (dt) {
       var delta = that._movement.velocity * dt;
       that.scrollByDelta(delta, that._movement.updateScrollBar);
@@ -280,9 +343,12 @@
 
   FancyScroller.prototype.onSnapComplete = function() {
     this.indicator.activeAttr.value = false;
+    this.trigger('snap_end');
+    this.trigger('move_end');
   };
 
   FancyScroller.prototype.onMovementComplete = function() {
+    this.trigger('inertia_end', this._movement);
     var snapToPos;
 
     if (this.scrollTop < 0) {
@@ -301,6 +367,7 @@
 
   FancyScroller.prototype.snapTo = function(snapToPos, updateScrollBar) {
     var snapTime = this.opts.snapTime;
+    this.trigger('snap_start', snapToPos);
     if (snapToPos !== null && !isNaN(snapToPos)) {
       var that = this,
         ti = 0,
@@ -393,10 +460,14 @@
       if (location.hash !== hash) {
         history.pushState(null, null, hash);
       }
+      this.trigger('hash_update', hash);
     }
 
     // Current secion is always the upper one
-    this.currentSectionIndex = i;
+    if (i != this.currentSectionIndex) {
+      this.currentSectionIndex = i;
+      this.trigger('section_changed', i);
+    }
 
     var currentSection = this.sections[i],
       nextSection = this.sections[i + 1];
@@ -426,6 +497,10 @@
     if (updateScrollBar) {
       document.documentElement.scrollTop = document.body.scrollTop = scrollTop;
     }
+    this.trigger('scrolled', {
+      scrollTop: scrollTop,
+      borderPos: this.visibleSectionBorderPos
+    });
   };
 
   FancyScroller.prototype.doScroll = function() {
