@@ -69,8 +69,10 @@ gulp.task 'demo', ['build'], ->
   copy_assets dist_dir + '/**/*.*', publish_dir
   compile_less  demo_less_file, publish_dir
 
+  r = new ReadMe('./README.md').render()
   context =
-    content: new ReadMe('./README.md').render()
+    content: r.html
+    hashes: r.hashes
     debug: opts.debug
 
   compile_ejs   demo_ejs_file, publish_dir, context

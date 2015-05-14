@@ -1,9 +1,15 @@
 marked = require 'marked'
 fs = require 'fs'
+hash = (str) ->
+  return str.toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/\./g, '-')
+    .replace(/-{2,}/g, '-')
 
 class Renderer extends marked.Renderer
   stack: []
   sections: {}
+  hashes: []
 
   heading: (text, level) =>
     # console.log(tex t)
@@ -21,7 +27,9 @@ class Renderer extends marked.Renderer
       id = @sections[level]
       @stack.push([level, id])
       className = if level == 1 then 'intro' else 'l2'
-      html += "<div id='section-#{level}-#{id}' name='#{text}' class='section #{className}'>"
+      h = hash(text)
+      html += "<div id='section-#{level}-#{id}' name='#{h}' class='section #{className}'>"
+      this.hashes.push {hash: h, title: text}
 
     html += "<h#{level}>#{text}</h#{level}>"
 
@@ -49,4 +57,9 @@ class ReadMe
 
     html += renderer.eof()
 
-    html
+    console.log(renderer.hashes)
+    r =
+      html: html
+      hashes: renderer.hashes
+
+    r

@@ -9,6 +9,17 @@
 </head>
 <body>
   <%- content %>
+
+  <nav>
+    <ul>
+      <% for (var i = 0; i < hashes.length; i++) { %>
+        <% var item = hashes[i]; %>
+        <li>
+          <a href="#<%= item.hash %>" section-title="<%= item.title %>"></a>
+        </li>
+      <% } %>
+    </ul>
+  </nav>
   <script src="fancy-scroller<%= debug ? '' : '.min' %>.js"></script>
   <script type="text/javascript">
     // loadStyle('style.css');
