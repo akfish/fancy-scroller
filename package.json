@@ -30,6 +30,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-uglify": "^1.2.0",
     "gulp-util": "^3.0.4",
+    "highlight.js": "^8.5.0",
     "marked": "^0.3.3",
     "minimist": "^1.1.1"
   }

@@ -53,11 +53,12 @@ class ReadMe
     renderer = new Renderer()
 
     html = marked @src,
+      highlight: (code) ->
+        require('highlight.js').highlightAuto(code).value
       renderer: renderer
 
     html += renderer.eof()
 
-    console.log(renderer.hashes)
     r =
       html: html
       hashes: renderer.hashes
