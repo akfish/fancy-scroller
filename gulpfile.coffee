@@ -61,6 +61,9 @@ DEFAULT_EJS_CONTENT =
   url_for: (name, ext) ->
     return "#{name}#{if not opts.debug then ".min" else ""}.#{ext}"
 
+  raw_css: (src) ->
+    return "<link rel='stylesheet' href='#{src}'>"
+    
   css: (path) ->
     src = this.url_for path, 'css'
     return "<link rel='stylesheet' href='#{src}'>"
