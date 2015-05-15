@@ -13,7 +13,7 @@
   var OPTS = {
     nav_min_opacity: 0.1,
     nav_max_opacity: 0.7,
-    nav_hover_opacity: 0.9
+    nav_hover_opacity: 0.95
   };
 
   function D(opts) {
