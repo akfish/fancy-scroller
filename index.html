@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<head>
+  <meta name="viewport" content="width=device-width,user-scalable=no">
+  <title>Fancy Scroller</title>
+  <link rel='stylesheet' href='style.min.css'>
+  <link rel='stylesheet' href='demo.min.css'>
+</head>
+<body>
+  <div id='section-1-1' name='fancy-scroller' class='section intro'><h1>Fancy Scroller</h1><p>A fancy CSS smooth scroller with layered effect</p>
+</div><div id='section-2-1' name='features' class='section l2'><h2>Features</h2><ul>
+<li>CSS smooth scroll</li>
+<li>Touch, mouse (drag &amp; wheel) and keyboard interaction</li>
+<li>Inertia scrolling</li>
+<li>Spring-back on both ends</li>
+<li>Snap to section borders</li>
+<li>Scroll bar support (native on desktop, simulated indicator on mobile)</li>
+<li>Hash tag navigation</li>
+</ul>
+</div><div id='section-2-2' name='usage' class='section l2'><h2>Usage</h2><ul>
+<li>Clone this project</li>
+</ul>
+<pre><code class="lang-bash"><span class="hljs-variable">$ </span>git clone <span class="hljs-symbol">https:</span>/<span class="hljs-regexp">/github.com/akfish</span><span class="hljs-regexp">/fancy-scroller.git</span>
+</code></pre>
+<ul>
+<li>Include the script in your HTML</li>
+</ul>
+<pre><code class="lang-html"><span class="hljs-doctype">&lt;!DOCTYPE html&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">head</span>&gt;</span>
+  <span class="hljs-comment">&lt;!-- Recommanded: disable native scroll on mobile devices --&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">meta</span> <span class="hljs-attribute">name</span>=<span class="hljs-value">"viewport"</span> <span class="hljs-attribute">content</span>=<span class="hljs-value">"width=device-width,user-scalable=no"</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">link</span> <span class="hljs-attribute">rel</span>=<span class="hljs-value">"stylesheet"</span> <span class="hljs-attribute">href</span>=<span class="hljs-value">"path/to/dist/style.min.css"</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">head</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">body</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"#container"</span>&gt;</span>
+    <span class="hljs-comment">&lt;!-- .section will be created as pages --&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"section"</span>&gt;</span>Page 1<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"section"</span>&gt;</span>Page 2<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"section"</span>&gt;</span>Page 3<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+    <span class="hljs-comment">&lt;!-- ... --&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">src</span>=<span class="hljs-value">"path/to/dist/fancy-scroll.min.js"</span> /&gt;</span><span class="apache">
+<span class="hljs-tag">&lt;/body&gt;</span></span>
+</code></pre>
+<ul>
+<li>Style your container and make sure it has well-defined position and size</li>
+</ul>
+<pre><code class="lang-css"><span class="hljs-id">#container</span> <span class="hljs-rules">{
+  <span class="hljs-rule"><span class="hljs-attribute">position</span>:<span class="hljs-value"> absolute</span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">width</span>:<span class="hljs-value"> <span class="hljs-number">100%</span></span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">height</span>:<span class="hljs-value"> <span class="hljs-number">100%</span></span></span>;
+}</span>
+</code></pre>
+<ul>
+<li>Create fancy scroller instance</li>
+</ul>
+<pre><code class="lang-js"><span class="hljs-reserved">var</span> opts = {
+  <span class="hljs-attribute">hashPrefix</span>: <span class="hljs-string">'foo-'</span>,
+  <span class="hljs-attribute">snapTime</span>: <span class="hljs-number">500</span>
+};
+<span class="hljs-reserved">var</span> contaienr = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'container'</span>),
+  scroller = <span class="hljs-keyword">new</span> FancyScroller(container, opts);
+</code></pre>
+</div><div id='section-2-3' name='options' class='section l2'><h2>Options</h2><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>friction</td>
+<td>float</td>
+<td>Friction factor</td>
+<td><code>0.9</code></td>
+</tr>
+<tr>
+<td>maxEndSpringLength</td>
+<td>float (in px)</td>
+<td>Extra space on top (= value) and bottom (= value * overlapFactor) when scrolling with mouse/touch screen. Once released, it will snap back like a spring</td>
+<td><code>64</code></td>
+</tr>
+<tr>
+<td>overlapFactor</td>
+<td>float</td>
+<td>Specify the maximum overlapping ratio of adjacent sections when scrolling</td>
+<td><code>0.6</code></td>
+</tr>
+<tr>
+<td>snapTime</td>
+<td>float (in ms)</td>
+<td>The duration of snap animation</td>
+<td><code>300</code></td>
+</tr>
+<tr>
+<td>snapSectionTop</td>
+<td>bool</td>
+<td>If <code>true</code>, snap to current section&#39;s top when visible section border sits within the top 1/3 screen space. Only works when scrolled by touch or mouse.</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td>snapSectionBottom</td>
+<td>bool</td>
+<td>If <code>true</code>, snap to current section&#39;s bottom when visible section border sits within the bottom 1/3 screen space. Only works when scrolled by touch or mouse.</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td>showMobileScrollIndicator</td>
+<td>bool</td>
+<td>Wheter to show scroll indicator or not when running on mobile devices</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td>hashPrefix</td>
+<td>string</td>
+<td>Prefix for section hashtags</td>
+<td><code>&quot;section-&quot;</code></td>
+</tr>
+<tr>
+<td>autoSetHash</td>
+<td>bool</td>
+<td>If <code>true</code>, url&#39;s hashtag will be changed to current section&#39;s when scrolled</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td>debug</td>
+<td>bool</td>
+<td>Enable/disable debug mode (loads un-minified stylesheet)</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td>animationEpsilon</td>
+<td>float</td>
+<td>A small number specifing the maximum margin of error when animating to a target state. Smaller number means more accurate animation (but longer convergence time)</td>
+<td><code>0.01</code></td>
+</tr>
+</tbody>
+</table>
+</div><div id='section-2-4' name='events' class='section l2'><h2>Events</h2><h3>Event API</h3><table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>on(name, handler)</code></td>
+<td>Attach event handler to an event</td>
+</tr>
+<tr>
+<td><code>off(name[, handler])</code></td>
+<td>Detach one or all handlers for an event</td>
+</tr>
+</tbody>
+</table>
+<h3>Available Events</h3><h4>Lifecycle Events</h4><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>init</code></td>
+<td>Triggered once constructor has finished execution</td>
+</tr>
+</tbody>
+</table>
+<h4>Movement Events</h4><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>force_start</code></td>
+<td>Fired when a touch or mouse drag begins</td>
+</tr>
+<tr>
+<td><code>move_start</code></td>
+<td>Fired immediately after <code>force_start</code></td>
+</tr>
+<tr>
+<td><code>force_update</code></td>
+<td>Fired when touch or mouse drag position changes</td>
+</tr>
+<tr>
+<td><code>force_end</code></td>
+<td>Fired when the touch or mouse drag finishes</td>
+</tr>
+<tr>
+<td><code>inertia_start</code></td>
+<td>Fired immediately after <code>force_end</code></td>
+</tr>
+<tr>
+<td><code>inertia_end</code></td>
+<td>Fired when inertia scrolling stops</td>
+</tr>
+<tr>
+<td><code>snap_start</code></td>
+<td>Fired immediately after <code>inertia_end</code></td>
+</tr>
+<tr>
+<td><code>snap_end</code></td>
+<td>Fired when snap stops</td>
+</tr>
+<tr>
+<td><code>move_end</code></td>
+<td>Fired when all movement stops</td>
+</tr>
+</tbody>
+</table>
+<p>Note that only mouse or touch events have force, hence only they can trigger movement events.</p>
+<p>Current movement states will be passed to all movement event handlers.</p>
+<h4>Scroll Events</h4><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>scrolled</code></td>
+<td>Fired when scroll postions changes</td>
+</tr>
+</tbody>
+</table>
+<h4>Navigation Events</h4><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>section_changing</code></td>
+<td>Triggered before upper section will be changed</td>
+</tr>
+<tr>
+<td><code>section_changed</code></td>
+<td>Triggered when upper section has changed</td>
+</tr>
+<tr>
+<td><code>hash_update</code></td>
+<td>Triggered when url hash has been changed due to scroll</td>
+</tr>
+</tbody>
+</table>
+<h4>Animation Events</h4><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>animation_start</code></td>
+<td>Animation started</td>
+</tr>
+<tr>
+<td><code>animation_cancelled</code></td>
+<td>Animation ended</td>
+</tr>
+<tr>
+<td><code>animation_end</code></td>
+<td>Animation cancelled</td>
+</tr>
+</tbody>
+</table>
+</div><div id='section-2-5' name='an-inside-look' class='section l2'><h2>An Inside Look</h2><p>When constructed, a scroller instance creates the following DOM inside the container:</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"#container"</span>&gt;</span>
+  <span class="hljs-comment">&lt;!-- remaining children --&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"strecher"</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"wrapper"</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"inner"</span>&gt;</span>
+      <span class="hljs-comment">&lt;!-- Children that matches .section selector --&gt;</span>  
+    <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"mobile-scroll-indicator"</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+</code></pre>
+<p>It moves all children matching <code>.section</code> selector into <code>#container&gt;.wrapper&gt;.inner</code>, calculates theirs height and positions them absolutely.</p>
+<p>The <code>.strecher</code>&#39;s height is then set to be children&#39;s total height, which will strech the container and create desired scroll bar behavior in desktop browsers.</p>
+<p>When scrolled, <code>transform: translateY(offset)</code> will be caculated and updated for <code>.wrapper</code> (for over-all scrolling) and <code>.section</code>s (for relative motion).
+Animations are done with <code>requesetAnimationFrame</code>.</p>
+<p>By default, Fancy scroller uses <a href="/less/style.less">style.less</a>, which contains bare-minimum style configurations for it to work. You should include it in <code>&lt;head&gt;</code> tag.<br>Normally you should not modify its content, nor overriding any position-related styles mentioned in that file.</p>
+</div><div id='section-2-6' name='about' class='section l2'><h2>About</h2></div></div></div></div></div></div></div>
+
+  <nav>
+    <ul>
+      
+        
+        <li>
+          <a href="#fancy-scroller" section-title="Fancy Scroller"></a>
+        </li>
+      
+        
+        <li>
+          <a href="#features" section-title="Features"></a>
+        </li>
+      
+        
+        <li>
+          <a href="#usage" section-title="Usage"></a>
+        </li>
+      
+        
+        <li>
+          <a href="#options" section-title="Options"></a>
+        </li>
+      
+        
+        <li>
+          <a href="#events" section-title="Events"></a>
+        </li>
+      
+        
+        <li>
+          <a href="#an-inside-look" section-title="An Inside Look"></a>
+        </li>
+      
+        
+        <li>
+          <a href="#about" section-title="About"></a>
+        </li>
+      
+    </ul>
+  </nav>
+  <div class="socials">
+    <ul>
+      <li>
+        <a class='github' href="https://github.com/akish/fancy-scroller"></a>
+      </li>
+    </ul>
+  </div>
+
+  <script type="text/javascript">
+    var Demo = {
+      opts: {
+        debug: false,
+        autoSetHash: true,
+        animationEpsilon: 0.001
+      }
+    };
+  </script>
+  <script src='fancy-scroller.min.js'></script>
+  <script src='demo.min.js'></script>
+</body>

@@ -1,0 +1,373 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,400,600,700,300);
+body {
+  font-family: 'Open Sans', sans-serif;
+}
+.socials {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 10;
+  opacity: 0.3;
+  transition: all 0.8s ease-in-out;
+}
+.socials:hover {
+  opacity: 0.7;
+}
+.socials ul {
+  list-style: none;
+  position: relative;
+  height: 32px;
+}
+.socials ul li {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  display: inline-block;
+}
+.socials ul li a {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+}
+.socials ul li .github {
+  background: url('github-32.png');
+}
+.section {
+  color: rgba(255, 255, 255, 0.87);
+  line-height: 100%;
+  padding: 100px;
+  font-size: 24px;
+  line-height: 32px;
+}
+.section a {
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.87);
+  text-decoration: none;
+  font-style: italic;
+}
+.section p {
+  padding: 8px 3px;
+}
+.section code {
+  text-decoration: underline;
+  font-weight: bold;
+}
+.section pre > code {
+  font-weight: normal;
+  text-decoration: none;
+}
+.section:after {
+  content: "";
+  clear: both;
+}
+.section ul {
+  list-style: none;
+  padding: 8px;
+}
+.section ul li:before {
+  content: '-';
+  padding-right: 16px;
+}
+.section pre {
+  font-size: 16px;
+  line-height: 16px;
+  white-space: pre-wrap;
+  padding-left: 8px;
+  border-left: 3px solid rgba(255, 255, 255, 0.54);
+}
+.intro {
+  background-image: url('diagnoal.png');
+}
+.intro h1 {
+  top: 50%;
+  position: relative;
+  font-size: 72px;
+  font-weight: lighter;
+  background: #333;
+  line-height: 72px;
+  width: auto;
+  text-transform: uppercase;
+  float: left;
+  margin-top: 28%;
+  text-align: left;
+}
+.intro p {
+  text-shadow: 3px 3px #333;
+  position: relative;
+  float: left;
+  font-style: italic;
+  font-size: 48px;
+  font-weight: 300;
+  padding-top: 32px;
+  line-height: 48px;
+  text-align: left;
+}
+.l2:before {
+  position: absolute;
+  pointer-events: none;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  box-shadow: inset rgba(0, 0, 0, 0.3) 0px 0px 100px 1px;
+  content: "";
+}
+.l2 h2 {
+  color: #50ABF1;
+  font-size: 36px;
+  line-height: 42px;
+  background: rgba(255, 255, 255, 0.87);
+  position: relative;
+  display: block;
+  padding: 8px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  clear: both;
+}
+.l2 h3,
+.l2 h4 {
+  padding: 8px;
+  font-weight: bold;
+}
+.l2 h4 {
+  font-weight: thin;
+  font-variant: small-caps;
+}
+.l2 table {
+  padding: 0px 6px;
+}
+.l2 p {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+nav {
+  position: fixed;
+  height: 32px;
+  z-index: 999;
+  left: 60px;
+  top: 100px;
+  color: rgba(255, 255, 255, 0.87);
+}
+nav:hover {
+  opacity: 0.7;
+}
+nav ul {
+  list-style: none;
+}
+nav ul li {
+  height: 32px;
+  min-width: 32px;
+  width: auto;
+  background-color: rgba(255, 255, 255, 0.54);
+  overflow: hidden;
+  margin-bottom: 8px;
+  border-radius: 0;
+  transition: all 0.3s ease;
+}
+nav ul li.active {
+  background-color: white;
+}
+nav ul li.active:hover {
+  border: 1px solid rgba(255, 255, 255, 0.54);
+}
+nav ul li.active a:before {
+  display: none;
+}
+nav ul li:nth-child(1) {
+  background-image: url('diagnoal.png');
+}
+nav ul li:hover {
+  border: 1px dashed rgba(255, 255, 255, 0.54);
+}
+nav ul li:nth-child(1):hover {
+  background-color: #333333;
+}
+nav ul li:nth-child(1):hover a:before {
+  background-color: #333333;
+}
+nav ul li:nth-child(2):hover {
+  background-color: #50abf1;
+}
+nav ul li:nth-child(2):hover a:before {
+  background-color: #50abf1;
+}
+nav ul li:nth-child(3):hover {
+  background-color: #cb2027;
+}
+nav ul li:nth-child(3):hover a:before {
+  background-color: #cb2027;
+}
+nav ul li:nth-child(4):hover {
+  background-color: #e77b39;
+}
+nav ul li:nth-child(4):hover a:before {
+  background-color: #e77b39;
+}
+nav ul li:nth-child(5):hover {
+  background-color: #45668e;
+}
+nav ul li:nth-child(5):hover a:before {
+  background-color: #45668e;
+}
+nav ul li:nth-child(6):hover {
+  background-color: #df4a32;
+}
+nav ul li:nth-child(6):hover a:before {
+  background-color: #df4a32;
+}
+nav ul li:nth-child(7):hover {
+  background-color: #aad450;
+}
+nav ul li:nth-child(7):hover a:before {
+  background-color: #aad450;
+}
+nav ul li a {
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.87);
+  text-decoration: none;
+  font-style: normal;
+}
+nav ul li a {
+  display: block;
+  width: 100%;
+  height: 100%;
+  line-height: 32px;
+  vertical-align: middle;
+  transition: all 0.3s ease;
+}
+nav ul li a:hover:before {
+  max-width: 1000%;
+  opacity: 1;
+}
+nav ul li a:before {
+  border: 1px dashed rgba(255, 255, 255, 0.54);
+  transition: all 0.8s ease;
+  position: absolute;
+  left: 40px;
+  background-color: rgba(255, 255, 255, 0.54);
+  height: 100%;
+  content: attr(section-title);
+  display: block;
+  width: auto;
+  max-width: 0;
+  opacity: 0;
+  white-space: nowrap;
+  overflow: hidden;
+}
+table {
+  font-size: 16px;
+  line-height: 16px;
+  text-align: left;
+}
+table th {
+  padding: 8px 2px;
+  font-variant: small-caps;
+  text-align: left;
+  border-bottom: 3px solid rgba(255, 255, 255, 0.54);
+}
+table td {
+  padding: 8px 2px;
+}
+table tr:last-child td {
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.54);
+}
+div[name='options'] td:nth-child(2) {
+  min-width: 120px;
+}
+div[name='options'] td:nth-child(3) {
+  max-width: 40%;
+}
+div[name='options'] td:nth-child(4) {
+  min-width: 120px;
+}
+div[name='events'] p {
+  font-size: 16px;
+  line-height: 16px;
+}
+div[name='events'] table {
+  width: 100%;
+}
+div[name='events'] table td:nth-child(1) {
+  width: 20%;
+}
+#section-1-1 {
+  background-color: #333333;
+}
+#section-2-1 {
+  background-color: #50abf1;
+}
+#section-2-1 h2 {
+  color: #50abf1;
+}
+#section-2-2 {
+  background-color: #cb2027;
+}
+#section-2-2 pre {
+  position: relative;
+  width: 50%;
+  float: right;
+  line-height: 32px;
+  vertical-align: middle;
+  margin-top: 16px;
+  white-space: pre-wrap;
+  padding-left: 16px;
+  border-left: 3px solid rgba(255, 255, 255, 0.54);
+}
+#section-2-2 ul {
+  position: relative;
+  width: 40%;
+  float: left;
+  clear: both;
+  margin-top: 8px;
+}
+#section-2-2 h2 {
+  color: #cb2027;
+}
+#section-2-3 {
+  background-color: #e77b39;
+}
+#section-2-3 h2 {
+  color: #e77b39;
+}
+#section-2-4 {
+  background-color: #45668e;
+}
+#section-2-4 h2 {
+  color: #45668e;
+}
+#section-2-5 {
+  background-color: #df4a32;
+}
+#section-2-5 h2 {
+  color: #df4a32;
+}
+#section-2-6 {
+  background-color: #aad450;
+}
+#section-2-6 h2 {
+  color: #aad450;
+}
+.hljs-reserved,
+.hljs-keyword {
+  font-weight: bold;
+}
+.hljs-number {
+  text-decoration: underline;
+}
+.hljs-string {
+  font-style: italic;
+}
+.hljs-comment {
+  color: rgba(255, 255, 255, 0.54);
+  font-style: oblique;
+}
+.hljs-variable,
+.hljs-attribute {
+  color: rgba(255, 255, 255, 0.54);
+  font-weight: bold;
+}
+.hljs-title,
+.hljs-doctype {
+  color: rgba(255, 255, 255, 0.87);
+  font-weight: bold;
+}
