@@ -7,6 +7,7 @@ minify      = require 'gulp-minify-css'
 rename      = require 'gulp-rename'
 uglify      = require 'gulp-uglify'
 minimist    = require 'minimist'
+_           = require 'underscore'
 ReadMe      = require './util/readme-renderer'
 
 publish_dir = '.site'
@@ -55,9 +56,21 @@ compile_js = (src, dst) ->
     .pipe rename({suffix: '.min'})
     .pipe gulp.dest(dst)
 
+DEFAULT_EJS_CONTENT =
+  url_for: (name, ext) ->
+    return "#{name}#{if not opts.debug then ".min" else ""}.#{ext}"
+
+  css: (path) ->
+    src = this.url_for path, 'css'
+    return "<link rel='stylesheet' href='#{src}'>"
+
+  js: (path) ->
+    src = this.url_for path, 'js'
+    return "<script src='#{src}'></script>"
+
 compile_ejs = (src, dst, context) ->
   gulp.src src
-    .pipe ejs(context)
+    .pipe ejs(_.defaults(DEFAULT_EJS_CONTENT, context))
     .pipe gulp.dest(dst)
 
 gulp.task 'build', ->
