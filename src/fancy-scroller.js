@@ -263,7 +263,7 @@
     }
   };
 
-  FancyScroller.prototype.handleMoveStart = function(pos) {
+  FancyScroller.prototype.handleMoveStart = function(pos, updateScrollBar) {
     this.indicator.activeAttr.value = true;
     this.el.className += " noselect";
     document.removeEventListener('scroll', this.onScroll.bind(this));
@@ -271,6 +271,7 @@
     this._movement.moving = true;
     this._movement.lastPosition = this._movement.startPosition = pos;
     this._movement.lastTime = this._movement.startTime = now;
+    this._movement.updateScrollBar = updateScrollBar;
 
     this._animation.shouldCancel = true;
     this.trigger('force_start', this._movement);
@@ -387,7 +388,7 @@
 
   FancyScroller.prototype.onTouchStart = function(e) {
     e.preventDefault();
-    this.handleMoveStart(e.pageY || e.touches[0].pageY || e.targetTouches[0].pageY);
+    this.handleMoveStart(e.pageY || e.touches[0].pageY || e.targetTouches[0].pageY, false);
   };
 
   FancyScroller.prototype.onTouchMove = function(e) {
@@ -399,7 +400,7 @@
   };
 
   FancyScroller.prototype.onMouseDown = function(e) {
-    this.handleMoveStart(e.clientY);
+    this.handleMoveStart(e.clientY, true);
   };
 
   FancyScroller.prototype.onMouseMove = function(e) {
