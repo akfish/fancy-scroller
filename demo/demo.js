@@ -20,8 +20,10 @@
     this.opts = defaults(OPTS, opts);
     this.scroller = new FancyScroller(document.body, this.opts);
     this.nav = $('nav');
+    this.nav.items = this.nav.querySelectorAll('li');
 
     this.scroller.on('scrolled', this.onScroll.bind(this));
+    this.scroller.on('section_changing', this.onSectionChanging.bind(this));
 
     this.nav.addEventListener('mouseover', this.onNavMouseOver.bind(this));
     this.nav.addEventListener('mouseout', this.onNavMouseOut.bind(this));
@@ -40,6 +42,11 @@
     if (!this.nav.hovering) {
       this.nav.style.opacity = this._getNavOpacity();
     }
+  };
+
+  D.prototype.onSectionChanging = function (next) {
+    this.nav.items[this.scroller.currentSectionIndex].className = "";
+    this.nav.items[next].className = "active";
   };
 
   D.prototype.onNavMouseOver = function (e) {

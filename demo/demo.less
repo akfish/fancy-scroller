@@ -155,7 +155,6 @@ body {
 
 .set-nav-color(@pos, @color) {
   &:nth-child(@{pos}):hover {
-    border: 1px dashed @white-54;
     background-color: @color;
     a:before {
       background-color: @color;
@@ -176,6 +175,15 @@ nav {
   ul {
     list-style: none;
     li {
+      &.active {
+        background-color: white;
+        &:hover {
+          border: 1px solid @white-54;
+        }
+        a:before {
+          display: none;
+        }
+      }
       // display: inline-block;
       height: 32px;
       min-width: 32px;
@@ -183,6 +191,9 @@ nav {
       background-color: @white-54;
       &:nth-child(1) {
         background-image: url('diagnoal.png');
+      }
+      &:hover {
+        border: 1px dashed @white-54;
       }
       .set-nav-color(1, @color-1);
       .set-nav-color(2, @color-2);
@@ -195,13 +206,6 @@ nav {
       margin-bottom: 8px;
       border-radius: 0;
       transition: all 0.3s ease;
-      li:hover {
-        border-radius: 50%;
-        a:before {
-
-        }
-      }
-
       .reset-link(@white-87, bold, normal);
       a {
         display: block;

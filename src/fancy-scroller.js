@@ -211,6 +211,7 @@
   };
 
   FancyScroller.prototype.init = function() {
+    this.currentSectionIndex = 0;
     this.updateHeightMap();
     this.mobileMediaQuery = window.matchMedia("only screen and (max-width: 529px), only screen and (min-width: 530px) and (max-width: 949px)");
     this.onHashChange();
@@ -469,6 +470,7 @@
 
     // Current secion is always the upper one
     if (i != this.currentSectionIndex) {
+      this.trigger('section_changing', i);
       this.currentSectionIndex = i;
       this.trigger('section_changed', i);
     }
