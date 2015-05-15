@@ -453,7 +453,10 @@
       if (scrollTop < this._accumulated[i]) break;
     }
 
+
+    // TODO: rename to upperSectionVisibleHeight
     this.visibleSectionBorderPos = scrollTop < 0 ? -scrollTop : this._accumulated[i] - scrollTop;
+    this.sectionRemaining = this.visibleSectionBorderPos / this._heights[i];
 
     if (this.opts.autoSetHash && this.currentSectionIndex != i && !this._animation.animating) {
       // Changed
@@ -500,7 +503,7 @@
     }
     this.trigger('scrolled', {
       scrollTop: scrollTop,
-      borderPos: this.visibleSectionBorderPos
+      sectionRemaining: this.sectionRemaining
     });
   };
 

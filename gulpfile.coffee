@@ -20,6 +20,7 @@ demo_files      = './demo/**/*.*'
 dist_files      = './dist/**/*.*'
 main_less_file  = './less/style.less'
 main_js_file    = './src/fancy-scroller.js'
+demo_js_file    = './demo/**/*.js'
 demo_less_file  = './demo/**/*.less'
 demo_ejs_file   = './demo/**/*.ejs'
 
@@ -80,6 +81,7 @@ gulp.task 'build', ->
 gulp.task 'demo', ['build'], ->
   copy_assets asset_files, publish_dir
   copy_assets dist_dir + '/**/*.*', publish_dir
+  compile_js    demo_js_file, publish_dir
   compile_less  demo_less_file, publish_dir
 
   r = new ReadMe('./README.md').render()
@@ -89,6 +91,7 @@ gulp.task 'demo', ['build'], ->
     debug: opts.debug
 
   compile_ejs   demo_ejs_file, publish_dir, context
+
 
 gulp.task 'watch', ->
   gulp.watch main_files, ['build']

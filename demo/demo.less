@@ -6,6 +6,14 @@
 @black-87: rgba(0, 0, 0, 0.87);
 @black-54: rgba(0, 0, 0, 0.54);
 
+@color-1: #333;
+@color-2: #50ABF1;
+@color-3: #CB2027;
+@color-4: #E77B39;
+@color-5: #45668E;
+@color-6: #DF4A32;
+@color-7: #AAD450;
+
 body {
   font-family: 'Open Sans', sans-serif;
 }
@@ -145,6 +153,16 @@ body {
   }
 }
 
+.set-nav-color(@pos, @color) {
+  &:nth-child(@{pos}):hover {
+    border: 1px dashed @white-54;
+    background-color: @color;
+    a:before {
+      background-color: @color;
+    }
+  }
+}
+
 nav {
   position: fixed;
   height: 32px;
@@ -152,6 +170,9 @@ nav {
   left: 100px - 32px - 8px;
   top: 100px;
   color: @white-87;
+  &:hover {
+    opacity: 0.7;
+  }
   ul {
     list-style: none;
     li {
@@ -160,11 +181,28 @@ nav {
       min-width: 32px;
       width: auto;
       background-color: @white-54;
+      &:nth-child(1) {
+        background-image: url('diagnoal.png');
+      }
+      .set-nav-color(1, @color-1);
+      .set-nav-color(2, @color-2);
+      .set-nav-color(3, @color-3);
+      .set-nav-color(4, @color-4);
+      .set-nav-color(5, @color-5);
+      .set-nav-color(6, @color-6);
+      .set-nav-color(7, @color-7);
       overflow: hidden;
       margin-bottom: 8px;
+      border-radius: 0;
+      transition: all 0.3s ease;
+      li:hover {
+        border-radius: 50%;
+        a:before {
+
+        }
+      }
 
       .reset-link(@white-87, bold, normal);
-      font-style: regular;
       a {
         display: block;
         width: 100%;
@@ -173,17 +211,23 @@ nav {
         vertical-align: middle;
         transition: all 0.3s ease;
         &:hover:before {
-          // position: absolute;
-          content: attr(section-title);
-          // width: 100%;
+          max-width: 1000%;
+          opacity: 1;
         }
         &:before {
+          border: 1px dashed @white-54;
+          transition: all 0.8s ease;
           position: absolute;
-          // width: 0%;
           left: 32px + 8px;
           background-color: @white-54;
           height: 100%;
-          content: "";
+          content: attr(section-title);
+          display: block;
+          width: auto;
+          max-width: 0;//1000%;
+          opacity: 0;
+          white-space: nowrap;
+          overflow: hidden;
         }
       }
     }
@@ -248,11 +292,11 @@ div[name='events'] {
 }
 
 #section-1-1 {
-	background-color: #333;
+	background-color: @color-1;
 }
 
 #section-2-1 {
-	.section-color(#50ABF1);
+	.section-color(@color-2);
 }
 
 #section-2-2 {
@@ -276,23 +320,23 @@ div[name='events'] {
     margin-top: 8px;
     // line-height: 16px;
   }
-	.section-color(#EC4989);
+	.section-color(@color-3);
 }
 
 #section-2-3 {
-	.section-color(#E77B39);
+	.section-color(@color-4);
 }
 
 #section-2-4 {
-	.section-color(#45668E);
+	.section-color(@color-5);
 }
 
 #section-2-5 {
-	.section-color(#DF4A32);
+	.section-color(@color-6);
 }
 
 #section-2-6 {
-	.section-color(#AAD450);
+	.section-color(@color-7);
 }
 
 .hljs-reserved, .hljs-keyword {
