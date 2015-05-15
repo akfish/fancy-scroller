@@ -123,6 +123,7 @@ Name | Description
 
 Name | Description
 ---- | ------------------
+`section_changing` | Triggered before upper section will be changed
 `section_changed` | Triggered when upper section has changed
 `hash_update` | Triggered when url hash has been changed due to scroll
 
