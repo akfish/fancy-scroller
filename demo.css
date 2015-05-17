@@ -4,6 +4,9 @@ body {
 code {
   font-family: 'Source Code Pro', monospace;
 }
+.hamburger {
+  display: none;
+}
 .socials {
   position: fixed;
   right: 16px;
@@ -81,7 +84,6 @@ code {
   background-image: url('diagnoal.png');
 }
 .intro h1 {
-  top: 50%;
   position: relative;
   font-size: 72px;
   font-weight: lighter;
@@ -90,7 +92,6 @@ code {
   width: auto;
   text-transform: uppercase;
   float: left;
-  margin-top: 28%;
   text-align: left;
 }
 .intro p {
@@ -273,6 +274,23 @@ table td {
 table tr:last-child td {
   border-bottom: 1px dashed rgba(255, 255, 255, 0.54);
 }
+div[name='usage'] pre {
+  position: relative;
+  width: 50%;
+  float: right;
+  line-height: 32px;
+  vertical-align: middle;
+  margin-top: 16px;
+  white-space: pre-wrap;
+  padding-left: 16px;
+}
+div[name='usage'] ul {
+  position: relative;
+  width: 40%;
+  float: left;
+  clear: both;
+  margin-top: 8px;
+}
 div[name='options'] td:nth-child(2) {
   min-width: 120px;
 }
@@ -303,24 +321,6 @@ div[name='events'] table td:nth-child(1) {
 }
 #section-2-2 {
   background-color: #cb2027;
-}
-#section-2-2 pre {
-  position: relative;
-  width: 50%;
-  float: right;
-  line-height: 32px;
-  vertical-align: middle;
-  margin-top: 16px;
-  white-space: pre-wrap;
-  padding-left: 16px;
-  border-left: 3px solid rgba(255, 255, 255, 0.54);
-}
-#section-2-2 ul {
-  position: relative;
-  width: 40%;
-  float: left;
-  clear: both;
-  margin-top: 8px;
 }
 #section-2-2 h2 {
   color: #cb2027;

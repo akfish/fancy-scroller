@@ -6,6 +6,7 @@
   <link rel='stylesheet' href='fonts/source-code-pro/css/fonts.css'>
   <link rel='stylesheet' href='style.min.css'>
   <link rel='stylesheet' href='demo.min.css'>
+  <link rel='stylesheet' href='demo.mobile.min.css'>
 </head>
 <body>
   <div id='section-1-1' name='fancy-scroller' class='section intro'><h1>Fancy Scroller</h1><p>A fancy CSS smooth scroller with layered effect</p>
@@ -137,6 +138,30 @@
 <td>float</td>
 <td>A small number specifing the maximum margin of error when animating to a target state. Smaller number means more accurate animation (but longer convergence time)</td>
 <td><code>0.01</code></td>
+</tr>
+<tr>
+<td>maxSnapableVelocity</td>
+<td>float</td>
+<td>A velocity threshold. When scroll velocity drops below this value in inertia scrolling stage, the scroller will snap immediately to the nearest section border, if the corresponding snapping conditions are met.</td>
+<td><code>0.01</code></td>
+</tr>
+<tr>
+<td>idleTimeout</td>
+<td>float</td>
+<td>A timer with this value (in ms) starts after scrolled with scroll bar or keyborad. If nothing happens within this period of time, the snap action will be triggered.</td>
+<td><code>1000</code></td>
+</tr>
+<tr>
+<td>enablePageKeyNavigation</td>
+<td>bool</td>
+<td>Enables <code>pageUp</code> and <code>pageDown</code> navigation</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td>keyEventSource</td>
+<td>string</td>
+<td>The value should be either <code>&quot;window&quot;</code> or <code>&quot;wrapper&quot;</code>. It specifies where to attach the <code>keydown</code> event listener. Set the value to <code>&quot;window&quot;</code> when using the scroller for the whole page. Otherwise it will attach event listener to itself (useful when using the scroller in a component).</td>
+<td><code>&quot;window&quot;</code></td>
 </tr>
 </tbody>
 </table>
@@ -297,7 +322,7 @@
 <p>When scrolled, <code>transform: translateY(offset)</code> will be caculated and updated for <code>.wrapper</code> (for over-all scrolling) and <code>.section</code>s (for relative motion).
 Animations are done with <code>requesetAnimationFrame</code>.</p>
 <p>By default, Fancy scroller uses <a href="/less/style.less">style.less</a>, which contains bare-minimum style configurations for it to work. You should include it in <code>&lt;head&gt;</code> tag.<br>Normally you should not modify its content, nor overriding any position-related styles mentioned in that file.</p>
-</div><div id='section-2-6' name='about' class='section l2'><h2>About</h2></div></div></div></div></div></div></div>
+</div></div></div></div></div></div>
 
   <nav>
     <ul>
@@ -332,17 +357,13 @@ Animations are done with <code>requesetAnimationFrame</code>.</p>
           <a href="#an-inside-look" section-title="An Inside Look"></a>
         </li>
       
-        
-        <li>
-          <a href="#about" section-title="About"></a>
-        </li>
-      
     </ul>
   </nav>
+  <div class="hamburger"></div>
   <div class="socials">
     <ul>
       <li>
-        <a class='github' href="https://github.com/akish/fancy-scroller"></a>
+        <a class='github' href="https://github.com/akfish/fancy-scroller"></a>
       </li>
     </ul>
   </div>

@@ -21,13 +21,33 @@
     this.scroller = new FancyScroller(document.body, this.opts);
     this.nav = $('nav');
     this.nav.items = this.nav.querySelectorAll('li');
+    this.hamburger = $('.hamburger');
 
-    this.scroller.on('scrolled', this.onScroll.bind(this));
-    this.scroller.on('section_changing', this.onSectionChanging.bind(this));
+    if (!this.scroller.isMobile) {
+      this.scroller.on('scrolled', this.onScroll.bind(this));
+      this.scroller.on('section_changing', this.onSectionChanging.bind(this));
 
-    this.nav.addEventListener('mouseover', this.onNavMouseOver.bind(this));
-    this.nav.addEventListener('mouseout', this.onNavMouseOut.bind(this));
+      this.nav.addEventListener('mouseover', this.onNavMouseOver.bind(this));
+      this.nav.addEventListener('mouseout', this.onNavMouseOut.bind(this));
+    }
+    this.showNav = false;
+    this.hamburger.addEventListener('click', this.onHamburgerClick.bind(this));
+    for (var i = 0; i < this.nav.items; i++) {
+      this.nav.items[i].querySelector('a').addEventListener('click', this.onHamburgerClick.bind(this));
+    }
+
+    window.addEventListener('hashchange', this.onHashChange.bind(this));
   }
+
+  D.prototype.onHashChange = function() {
+    this.showNav = false;
+    this.nav.className = "";
+  };
+
+  D.prototype.onHamburgerClick = function () {
+    this.showNav = !this.showNav;
+    this.nav.className = this.showNav ? "active" : "";
+  };
 
   D.prototype._getNavOpacity = function () {
     var min_opacity = this.opts.nav_min_opacity,
